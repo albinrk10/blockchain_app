@@ -1,5 +1,4 @@
 import 'package:example2/app/domain/repositories/exchange_repository.dart';
-import 'package:example2/app/domain/results/get_prices/get_prices_result.dart';
 import 'package:example2/app/presentation/modules/home/bloc/home_state.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,15 +9,18 @@ class HomeBloc extends ChangeNotifier {
 
   final ExchangeRepository exchangeRepository;
 
-  HomeState _state = HomeStateLoading();
+  HomeState _state = HomeState.loading();
 
   HomeState get state => _state;
 
   Future<void> init() async {
-    if (state is! HomeStateLoading) {
-      _state = HomeStateLoading();
-      notifyListeners();
-    }
+    state.maybeWhen(
+      loading: () {},
+      orElse: () =>{
+        _state = HomeState.loading(),
+        notifyListeners(),
+      },
+    );
     final result = await exchangeRepository.getPrices(
       [
         'bitcoin',
@@ -27,11 +29,12 @@ class HomeBloc extends ChangeNotifier {
         'dogecoin',
       ],
     );
-    if (result is GetPricesSuccess) {
-      _state = HomeStateLoaded(result.cryptos);
-    } else {
-      _state = HomeStateFailed();
-    }
+
+    _state = result.when(
+      left: (failure) => HomeState.failed(failure),
+      right: (cryptos) => HomeState.loaded(cryptos),
+    );
+
     notifyListeners();
   }
 }

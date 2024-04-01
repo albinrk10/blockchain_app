@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:example2/app/domain/either/either.dart';
 import 'package:example2/app/domain/failures/http_request_failure.dart';
 import 'package:example2/app/domain/models/crypto/crypto.dart';
-import 'package:example2/app/domain/results/get_prices/get_prices_result.dart';
+import 'package:example2/app/domain/repositories/exchange_repository.dart';
 import 'package:http/http.dart';
 
 class ExchangeAPI {
@@ -11,7 +11,7 @@ class ExchangeAPI {
 
   ExchangeAPI(this._client);
 
-  Future<GetPricesResult> getPrices(List<String> ids) async {
+  GetPricesFuture getPrices(List<String> ids) async {
     try {
       final response = await _client.get(
         Uri.parse(
@@ -26,25 +26,29 @@ class ExchangeAPI {
               symbol: e['symbol'],
               price: double.parse(e['priceUsd'])),
         );
-        return GetPricesSuccess(crypto.toList());
+        return Either.right(
+          crypto.toList(),
+        );
       }
       if (response.statusCode == 404) {
-        throw HttpRequestFailure.notFound;
+        throw HttpRequestFailure.notFound();
       }
       if (response.statusCode >= 500) {
-        throw HttpRequestFailure.server;
+        throw HttpRequestFailure.server();
       }
-      throw HttpRequestFailure.local;
+      throw HttpRequestFailure.local();
     } catch (e) {
       late HttpRequestFailure failure;
       if (e is HttpRequestFailure) {
         failure = e;
       } else if (e is SocketException || e is ClientException) {
-        failure = HttpRequestFailure.network;
+        failure = HttpRequestFailure.network();
       } else {
-        failure = HttpRequestFailure.local;
+        failure = HttpRequestFailure.local();
       }
-      return GetPricesFailure(failure);
+      return Either.left(
+        failure,
+      );
     }
   }
 }

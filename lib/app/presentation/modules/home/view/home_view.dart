@@ -1,5 +1,4 @@
 import 'package:example2/app/presentation/modules/home/bloc/home_bloc.dart';
-import 'package:example2/app/presentation/modules/home/bloc/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,31 +14,33 @@ class HomeView extends StatelessWidget {
       builder: (context, _) {
         final HomeBloc bloc = context.watch();
         return Scaffold(
-          body: () {
-            final state = bloc.state;
-            if (state is HomeStateLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (state is HomeStateLoaded) {
-              return ListView.builder(
-                itemBuilder: (_, index) {
-                  final crypto = state.cryptos[index];
-                  return ListTile(
-                    title: Text(crypto.id),
-                    subtitle: Text(crypto.symbol),
-                    trailing: Text(crypto.price.toStringAsFixed(2)),
+            body: bloc.state.when(
+                loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                failed: (failure) {
+                  final message = failure.whenOrNull(
+                    network: () => 'Network error',
+                    server: () => 'Server error',
+                  );
+                  if (message == null) {
+                    return const SizedBox();
+                  }
+                  return Center(
+                    child: Text(message),
                   );
                 },
-                itemCount: state.cryptos.length,
-              );
-            }
-            return const Center(
-              child: Text('Error'),
-            );
-          }(),
-        );
+                loaded: (cryptos) => ListView.builder(
+                      itemBuilder: (_, index) {
+                        final crypto = cryptos[index];
+                        return ListTile(
+                          title: Text(crypto.id),
+                          subtitle: Text(crypto.symbol),
+                          trailing: Text(crypto.price.toStringAsFixed(2)),
+                        );
+                      },
+                      itemCount: cryptos.length,
+                    )));
       },
     );
   }
