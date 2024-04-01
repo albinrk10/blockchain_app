@@ -10,16 +10,27 @@ class HomeView extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => HomeBloc(
         exchangeRepository: context.read(),
+        wsRepository: context.read(),
       )..init(),
       builder: (context, _) {
         final HomeBloc bloc = context.watch();
         return Scaffold(
-            body: bloc.state.when(
-                loading: () => const Center(
+            appBar: AppBar(
+                title: bloc.state.mapOrNull(
+              loaded: (state) => Text(
+                state.wsStatus.when(
+                  connecting:() =>  'connecting',
+                  connected:() => 'connected',
+                  failed:() => 'failed',
+                ),
+              ),
+            )),
+            body: bloc.state.map(
+                loading: (_) => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                failed: (failure) {
-                  final message = failure.whenOrNull(
+                failed: (state) {
+                  final message = state.failure.whenOrNull(
                     network: () => 'Network error',
                     server: () => 'Server error',
                   );
@@ -30,16 +41,16 @@ class HomeView extends StatelessWidget {
                     child: Text(message),
                   );
                 },
-                loaded: (cryptos) => ListView.builder(
+                loaded: (state) => ListView.builder(
                       itemBuilder: (_, index) {
-                        final crypto = cryptos[index];
+                        final crypto = state.cryptos[index];
                         return ListTile(
                           title: Text(crypto.id),
                           subtitle: Text(crypto.symbol),
                           trailing: Text(crypto.price.toStringAsFixed(2)),
                         );
                       },
-                      itemCount: cryptos.length,
+                      itemCount: state.cryptos.length,
                     )));
       },
     );
