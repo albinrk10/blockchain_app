@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:example2/app/domain/models/ws_status/ws_status.dart';
 import 'package:example2/app/domain/repositories/exchange_repository.dart';
 import 'package:example2/app/domain/repositories/ws_repository.dart';
 import 'package:example2/app/presentation/modules/home/bloc/home_state.dart';
@@ -12,7 +13,7 @@ class HomeBloc extends ChangeNotifier {
 
   final ExchangeRepository exchangeRepository;
   final WsRepository wsRepository;
-  StreamSubscription? _subscription;
+  StreamSubscription? _pricesSubcription , _wsSubcription;
 
   HomeState _state = const HomeState.loading();
 
@@ -70,8 +71,9 @@ class HomeBloc extends ChangeNotifier {
   }
 
   void _onPricesChanged() {
-    _subscription?.cancel();
-    _subscription = wsRepository.onPricesChanged.listen(
+    _pricesSubcription?.cancel();
+    _wsSubcription?.cancel();
+    _pricesSubcription = wsRepository.onPricesChanged.listen(
       (changes) {
         state.mapOrNull(
           loaded: (state) {
@@ -95,11 +97,22 @@ class HomeBloc extends ChangeNotifier {
         );
       },
     );
+   _wsSubcription = wsRepository.onStatusChanged.listen((status) {
+    state.mapOrNull(
+      loaded: (state) {
+        _state = state.copyWith(
+          wsStatus: status,
+        );
+        notifyListeners();
+      },
+    );
+   });
   }
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _pricesSubcription?.cancel();
+    _wsSubcription?.cancel();
     super.dispose();
   }
 }
