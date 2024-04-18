@@ -22,6 +22,9 @@ class HomeBloc extends ChangeNotifier {
   final _ids = [
     'bitcoin',
     'ethereum',
+    'tether',
+    'binance-coin',
+    'monero',
     'litecoin',
     'usd-coin',
     'dogecoin',

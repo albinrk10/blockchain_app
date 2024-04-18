@@ -18,7 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$Crypto {
   String get id => throw _privateConstructorUsedError;
   String get symbol => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
+  double get changePercent24Hr => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CryptoCopyWith<Crypto> get copyWith => throw _privateConstructorUsedError;
@@ -29,7 +31,12 @@ abstract class $CryptoCopyWith<$Res> {
   factory $CryptoCopyWith(Crypto value, $Res Function(Crypto) then) =
       _$CryptoCopyWithImpl<$Res, Crypto>;
   @useResult
-  $Res call({String id, String symbol, double price});
+  $Res call(
+      {String id,
+      String symbol,
+      String name,
+      double price,
+      double changePercent24Hr});
 }
 
 /// @nodoc
@@ -47,7 +54,9 @@ class _$CryptoCopyWithImpl<$Res, $Val extends Crypto>
   $Res call({
     Object? id = null,
     Object? symbol = null,
+    Object? name = null,
     Object? price = null,
+    Object? changePercent24Hr = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -58,9 +67,17 @@ class _$CryptoCopyWithImpl<$Res, $Val extends Crypto>
           ? _value.symbol
           : symbol // ignore: cast_nullable_to_non_nullable
               as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      changePercent24Hr: null == changePercent24Hr
+          ? _value.changePercent24Hr
+          : changePercent24Hr // ignore: cast_nullable_to_non_nullable
               as double,
     ) as $Val);
   }
@@ -73,7 +90,12 @@ abstract class _$$CryptoImplCopyWith<$Res> implements $CryptoCopyWith<$Res> {
       __$$CryptoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String symbol, double price});
+  $Res call(
+      {String id,
+      String symbol,
+      String name,
+      double price,
+      double changePercent24Hr});
 }
 
 /// @nodoc
@@ -89,7 +111,9 @@ class __$$CryptoImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? symbol = null,
+    Object? name = null,
     Object? price = null,
+    Object? changePercent24Hr = null,
   }) {
     return _then(_$CryptoImpl(
       id: null == id
@@ -100,9 +124,17 @@ class __$$CryptoImplCopyWithImpl<$Res>
           ? _value.symbol
           : symbol // ignore: cast_nullable_to_non_nullable
               as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      changePercent24Hr: null == changePercent24Hr
+          ? _value.changePercent24Hr
+          : changePercent24Hr // ignore: cast_nullable_to_non_nullable
               as double,
     ));
   }
@@ -112,18 +144,26 @@ class __$$CryptoImplCopyWithImpl<$Res>
 
 class _$CryptoImpl implements _Crypto {
   const _$CryptoImpl(
-      {required this.id, required this.symbol, required this.price});
+      {required this.id,
+      required this.symbol,
+      required this.name,
+      required this.price,
+      required this.changePercent24Hr});
 
   @override
   final String id;
   @override
   final String symbol;
   @override
+  final String name;
+  @override
   final double price;
+  @override
+  final double changePercent24Hr;
 
   @override
   String toString() {
-    return 'Crypto(id: $id, symbol: $symbol, price: $price)';
+    return 'Crypto(id: $id, symbol: $symbol, name: $name, price: $price, changePercent24Hr: $changePercent24Hr)';
   }
 
   @override
@@ -133,11 +173,15 @@ class _$CryptoImpl implements _Crypto {
             other is _$CryptoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.symbol, symbol) || other.symbol == symbol) &&
-            (identical(other.price, price) || other.price == price));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.price, price) || other.price == price) &&
+            (identical(other.changePercent24Hr, changePercent24Hr) ||
+                other.changePercent24Hr == changePercent24Hr));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, symbol, price);
+  int get hashCode =>
+      Object.hash(runtimeType, id, symbol, name, price, changePercent24Hr);
 
   @JsonKey(ignore: true)
   @override
@@ -150,14 +194,20 @@ abstract class _Crypto implements Crypto {
   const factory _Crypto(
       {required final String id,
       required final String symbol,
-      required final double price}) = _$CryptoImpl;
+      required final String name,
+      required final double price,
+      required final double changePercent24Hr}) = _$CryptoImpl;
 
   @override
   String get id;
   @override
   String get symbol;
   @override
+  String get name;
+  @override
   double get price;
+  @override
+  double get changePercent24Hr;
   @override
   @JsonKey(ignore: true)
   _$$CryptoImplCopyWith<_$CryptoImpl> get copyWith =>
